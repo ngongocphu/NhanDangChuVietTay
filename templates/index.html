@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+
+{% block title %}Trang chủ - Vietnamese OCR {% endblock %}
+
+{% block content %}
+<div class="grid grid-2">
+    <!-- Upload Section -->
+    <div class="card">
+        <h3><i class="fas fa-upload"></i> Tải lên ảnh</h3>
+        <p class="mb-3">Chọn ảnh để nhận dạng văn bản tiếng Việt</p>
+        
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-content">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
+                <p>Kéo thả ảnh vào đây hoặc nhấn để chọn</p>
+                <p style="font-size: 0.9rem; color: #666;">Hỗ trợ: PNG, JPG, JPEG, GIF, BMP (tối đa 10MB)</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        </div>
+
+        <div class="mt-3">
+            <button class="btn btn-primary" id="processBtn" disabled>
+                <i class="fas fa-magic"></i> Nhận dạng văn bản
+                            </button>
+                        </div>
+
+        <div id="imagePreview" class="mt-3" style="display: none;">
+            <img id="previewImg" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    </div>
+                </div>
+
+    <!-- Results Section -->
+    <div class="card">
+        <h3><i class="fas fa-file-alt"></i> Kết quả nhận dạng</h3>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Đang xử lý ảnh...</p>
+        </div>
+        
+        <div id="results" style="display: none;">
+            <!-- Statistics -->
+            <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h4><i class="fas fa-chart-bar"></i> Thông tin xử lý</h4>
+                <div class="grid grid-3" style="margin-top: 1rem;">
+                    <div class="text-center">
+                        <div style="font-size: 1.5rem; font-weight: bold;" id="charCount">0</div>
+                        <div style="font-size: 0.9rem;">ký tự</div>
+                    </div>
+                    <div class="text-center">
+                        <div style="font-size: 1.5rem; font-weight: bold;" id="processingTime">0s</div>
+                        <div style="font-size: 0.9rem;">thời gian</div>
+                    </div>
+                    <div class="text-center">
+                        <div style="font-size: 1.5rem; font-weight: bold;" id="confidence">0%</div>
+                        <div style="font-size: 0.9rem;">độ tin cậy</div>
+                    </div>
+                    </div>
+                </div>
+
+            <!-- Recognized Text -->
+            <div class="mt-3">
+                <h4><i class="fas fa-align-left"></i> Văn bản đã nhận dạng</h4>
+                <textarea id="recognizedText" class="form-control" rows="8" style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; resize: vertical;" readonly></textarea>
+                    </div>
+            
+            <!-- Download Options -->
+            <div class="mt-3">
+                <h4><i class="fas fa-download"></i> Tải xuống kết quả</h4>
+                <div class="grid grid-4">
+                    <button class="btn btn-success" onclick="downloadFile('txt')">
+                        <i class="fas fa-file-alt"></i> TXT
+                    </button>
+                    <button class="btn btn-info" onclick="downloadFile('docx')">
+                        <i class="fas fa-file-word"></i> Word
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadFile('pdf')">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="btn btn-primary" onclick="downloadAll()">
+                        <i class="fas fa-archive"></i> Tất cả
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="noResults" class="alert alert-info">
+            <i class="fas fa-info-circle"></i> Vui lòng tải lên ảnh và nhấn "Nhận dạng văn bản" để xem kết quả
+            </div>
+        </div>
+    </div>
+
+<!-- Sample Images Section - Removed to avoid confusion -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-area {
+        border: 2px dashed #667eea;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(102, 126, 234, 0.05);
+    }
+    
+    .upload-area:hover {
+        border-color: #764ba2;
+        background: rgba(102, 126, 234, 0.1);
+    }
+    
+    .upload-area.dragover {
+        border-color: #764ba2;
+        background: rgba(102, 126, 234, 0.15);
+        transform: scale(1.02);
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1rem;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .sample-image {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    
+    .sample-image:hover {
+        transform: scale(1.05);
+    }
+    
+    .sample-image img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+    
+    .sample-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .sample-image:hover .sample-overlay {
+        opacity: 1;
+    }
+    
+    .sample-overlay button {
+        background: white;
+        color: #333;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentText = '';
+
+$(document).ready(function() {
+    // File upload handling
+    const uploadArea = $('#uploadArea');
+    const fileInput = $('#fileInput');
+    const processBtn = $('#processBtn');
+    const imagePreview = $('#imagePreview');
+    const previewImg = $('#previewImg');
+    
+    // Click to select file - simplified
+    uploadArea.on('click', function(e) {
+        console.log('Upload area clicked');
+        fileInput.click();
+    });
+
+        // Drag and drop
+    uploadArea.on('dragover', function(e) {
+            e.preventDefault();
+        e.stopPropagation();
+        $(this).addClass('dragover');
+        console.log('Drag over');
+    });
+    
+    uploadArea.on('dragenter', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Drag enter');
+    });
+    
+    uploadArea.on('dragleave', function(e) {
+            e.preventDefault();
+        e.stopPropagation();
+        $(this).removeClass('dragover');
+        console.log('Drag leave');
+    });
+    
+    uploadArea.on('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).removeClass('dragover');
+        console.log('Drop event');
+        
+        const files = e.originalEvent.dataTransfer.files;
+        console.log('Dropped files:', files.length);
+        if (files.length > 0) {
+            // Create a new FileList and assign to file input
+            const dt = new DataTransfer();
+            dt.items.add(files[0]);
+            fileInput[0].files = dt.files;
+            
+            // Trigger the change event
+            fileInput.trigger('change');
+        }
+    });
+    
+    // File input change
+    fileInput.on('change', function(e) {
+        console.log('File input changed, files:', e.target.files.length);
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+    
+    // Process button
+    processBtn.on('click', function() {
+        processImage();
+    });
+    
+    // Sample images removed to avoid confusion
+});
+
+function handleFileSelect(file) {
+    console.log('File selected:', file.name, file.type, file.size);
+    
+    // Check file type - more flexible
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/bmp'];
+    const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'bmp'];
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    
+    if (!allowedTypes.includes(file.type.toLowerCase()) && !allowedExtensions.includes(fileExtension)) {
+        alert('Vui lòng chọn file ảnh! Hỗ trợ: PNG, JPG, JPEG, GIF, BMP');
+        return;
+    }
+    
+    // Check file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+        alert('File quá lớn! Kích thước tối đa: 10MB');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        console.log('File loaded successfully');
+        $('#previewImg').attr('src', e.target.result);
+        $('#imagePreview').show();
+        $('#processBtn').prop('disabled', false);
+        $('#noResults').show();
+        $('#results').hide();
+    };
+    reader.onerror = function(e) {
+        console.error('Error reading file:', e);
+        alert('Lỗi đọc file! Vui lòng thử lại.');
+    };
+    reader.readAsDataURL(file);
+}
+
+function processImage() {
+    const fileInput = $('#fileInput')[0];
+    console.log('Processing image, files:', fileInput.files.length);
+    console.log('File input element:', fileInput);
+    console.log('Files:', fileInput.files);
+    
+    if (!fileInput.files || !fileInput.files.length) {
+        alert('Vui lòng chọn ảnh trước!');
+        return;
+    }
+
+                const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    console.log('FormData created, file:', fileInput.files[0].name);
+    
+    $('#loading').show();
+    $('#results').hide();
+    $('#noResults').hide();
+    $('#processBtn').prop('disabled', true);
+    
+    $.ajax({
+        url: '/upload',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        timeout: 60000, // 60 seconds timeout
+        success: function(response) {
+            console.log('Upload successful:', response);
+            $('#loading').hide();
+            $('#results').show();
+            $('#processBtn').prop('disabled', false);
+            
+            // Update statistics
+            $('#charCount').text(response.char_count);
+            $('#processingTime').text(response.processing_time + 's');
+            $('#confidence').text(response.confidence + '%');
+            
+            // Update text
+            currentText = response.text;
+            $('#recognizedText').val(response.text);
+        },
+        error: function(xhr, status, error) {
+            console.error('Upload error:', xhr, status, error);
+            $('#loading').hide();
+            $('#noResults').show();
+            $('#processBtn').prop('disabled', false);
+            
+            let errorMsg = 'Có lỗi xảy ra!';
+            try {
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMsg = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    const response = JSON.parse(xhr.responseText);
+                    errorMsg = response.error || xhr.responseText;
+                } else if (status === 'timeout') {
+                    errorMsg = 'Timeout - Vui lòng thử lại!';
+                } else if (status === 'error') {
+                    errorMsg = 'Lỗi kết nối - Vui lòng kiểm tra mạng!';
+                }
+            } catch (e) {
+                errorMsg = 'Lỗi không xác định - Vui lòng thử lại!';
+            }
+            
+            alert('Lỗi: ' + errorMsg);
+        }
+    });
+}
+
+function downloadFile(type) {
+    if (!currentText) {
+        alert('Không có nội dung để tải!');
+        return;
+    }
+    
+    const url = `/download/${type}?text=${encodeURIComponent(currentText)}`;
+    window.open(url, '_blank');
+}
+
+function downloadAll() {
+    if (!currentText) {
+        alert('Không có nội dung để tải!');
+        return;
+    }
+    
+    const url = `/download_all?text=${encodeURIComponent(currentText)}`;
+    window.open(url, '_blank');
+}
+
+function loadSampleImages() {
+    const sampleImages = [
+        { path: 'data/vn_handwritten_images/vn_000000.png', title: 'Mẫu 1 - Văn bản viết tay cơ bản' },
+        { path: 'data/vn_handwritten_images/vn_000001.png', title: 'Mẫu 2 - Văn bản viết tay phức tạp' },
+        { path: 'data/vn_handwritten_images/vn_000002.png', title: 'Mẫu 3 - Văn bản viết tay nâng cao' },
+        { path: 'data/vn_handwritten_images/vn_000003.png', title: 'Mẫu 4 - Văn bản viết tay đặc biệt' },
+        { path: 'data/vn_handwritten_images/vn_000004.png', title: 'Mẫu 5 - Văn bản viết tay chất lượng cao' }
+    ];
+    
+    const container = $('#sampleImages');
+    sampleImages.forEach((sample, index) => {
+        const sampleDiv = $(`
+            <div class="sample-image" onclick="useSampleImage('${sample.path}', '${sample.title}')">
+                <img src="${sample.path}" alt="${sample.title}" onerror="this.parentElement.style.display='none'">
+                <div class="sample-overlay">
+                    <button>Sử dụng mẫu ${index + 1}</button>
+                        </div>
+                <div style="padding: 0.5rem; text-align: center; font-size: 0.9rem;">
+                    ${sample.title}
+                            </div>
+                        </div>
+        `);
+        container.append(sampleDiv);
+    });
+}
+
+function useSampleImage(imagePath, title) {
+    // Create a fake file input for the sample image
+    fetch(imagePath)
+        .then(response => response.blob())
+        .then(blob => {
+            const file = new File([blob], title, { type: blob.type });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            
+            const fileInput = $('#fileInput')[0];
+            fileInput.files = dataTransfer.files;
+            
+            // Trigger file selection
+            handleFileSelect(file);
+            
+            // Scroll to top
+            $('html, body').animate({ scrollTop: 0 }, 500);
+        })
+        .catch(error => {
+            console.error('Error loading sample image:', error);
+            alert('Không thể tải ảnh mẫu. Vui lòng thử lại!');
+        });
+}
+    </script>
+{% endblock %}

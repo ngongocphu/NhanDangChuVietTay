@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block title %}Ảnh mẫu - Vietnamese OCR{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h3><i class="fas fa-images"></i> Ảnh mẫu để test</h3>
+    <p class="mb-3">Thử nghiệm với các ảnh mẫu có sẵn để kiểm tra độ chính xác của hệ thống OCR</p>
+    
+    <div class="grid grid-2" id="sampleImages">
+        <!-- Sample images will be loaded here -->
+    </div>
+</div>
+
+<div class="card mt-3">
+    <h3><i class="fas fa-info-circle"></i> Hướng dẫn sử dụng ảnh mẫu</h3>
+    <div class="grid grid-2">
+        <div>
+            <h4><i class="fas fa-mouse-pointer"></i> Cách sử dụng</h4>
+            <ul>
+                <li><strong>Nhấn vào ảnh mẫu:</strong> Chọn ảnh mẫu để sử dụng</li>
+                <li><strong>Tự động chuyển:</strong> Ảnh sẽ được chuyển sang trang chính</li>
+                <li><strong>Nhận dạng:</strong> Nhấn nút "Nhận dạng văn bản" để xử lý</li>
+                <li><strong>Xem kết quả:</strong> Kiểm tra độ chính xác của hệ thống</li>
+            </ul>
+        </div>
+        <div>
+            <h4><i class="fas fa-chart-line"></i> Đánh giá hiệu suất</h4>
+            <ul>
+                <li><strong>Độ chính xác:</strong> So sánh kết quả với văn bản gốc</li>
+                <li><strong>Thời gian xử lý:</strong> Đo tốc độ nhận dạng</li>
+                <li><strong>Chất lượng ảnh:</strong> Đánh giá ảnh hưởng của chất lượng ảnh</li>
+                <li><strong>Loại văn bản:</strong> Test với các loại văn bản khác nhau</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <h3><i class="fas fa-upload"></i> Tải lên ảnh của bạn</h3>
+    <p class="mb-3">Hoặc tải lên ảnh của riêng bạn để test</p>
+    
+    <div class="upload-area" id="uploadArea" style="border: 2px dashed #667eea; border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s ease; background: rgba(102, 126, 234, 0.05);">
+        <div class="upload-content">
+            <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
+            <p>Kéo thả ảnh vào đây hoặc nhấn để chọn</p>
+            <p style="font-size: 0.9rem; color: #666;">Hỗ trợ: PNG, JPG, JPEG, GIF, BMP</p>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+    </div>
+    
+    <div class="mt-3">
+        <button class="btn btn-primary" id="useCustomBtn" disabled>
+            <i class="fas fa-arrow-right"></i> Sử dụng ảnh này
+        </button>
+    </div>
+    
+    <div id="imagePreview" class="mt-3" style="display: none;">
+        <img id="previewImg" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-area:hover {
+        border-color: #764ba2 !important;
+        background: rgba(102, 126, 234, 0.1) !important;
+    }
+    
+    .upload-area.dragover {
+        border-color: #764ba2 !important;
+        background: rgba(102, 126, 234, 0.15) !important;
+        transform: scale(1.02);
+    }
+    
+    .sample-image {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        background: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .sample-image:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .sample-image img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .sample-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .sample-image:hover .sample-overlay {
+        opacity: 1;
+    }
+    
+    .sample-overlay button {
+        background: white;
+        color: #333;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .sample-overlay button:hover {
+        background: #667eea;
+        color: white;
+    }
+    
+    .sample-info {
+        padding: 1rem;
+    }
+    
+    .sample-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+    
+    .sample-description {
+        font-size: 0.9rem;
+        color: #666;
+        line-height: 1.4;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // File upload handling
+    const uploadArea = $('#uploadArea');
+    const fileInput = $('#fileInput');
+    const useCustomBtn = $('#useCustomBtn');
+    const imagePreview = $('#imagePreview');
+    const previewImg = $('#previewImg');
+    
+    // Click to select file
+    uploadArea.on('click', function() {
+        fileInput.click();
+    });
+    
+    // Drag and drop
+    uploadArea.on('dragover', function(e) {
+        e.preventDefault();
+        $(this).addClass('dragover');
+    });
+    
+    uploadArea.on('dragleave', function(e) {
+        e.preventDefault();
+        $(this).removeClass('dragover');
+    });
+    
+    uploadArea.on('drop', function(e) {
+        e.preventDefault();
+        $(this).removeClass('dragover');
+        
+        const files = e.originalEvent.dataTransfer.files;
+        if (files.length > 0) {
+            handleFileSelect(files[0]);
+        }
+    });
+    
+    // File input change
+    fileInput.on('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+    
+    // Use custom image button
+    useCustomBtn.on('click', function() {
+        // Redirect to main page with the selected image
+        window.location.href = '/';
+    });
+    
+    // Load sample images
+    loadSampleImages();
+});
+
+function handleFileSelect(file) {
+    if (!file.type.startsWith('image/')) {
+        alert('Vui lòng chọn file ảnh!');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        $('#previewImg').attr('src', e.target.result);
+        $('#imagePreview').show();
+        $('#useCustomBtn').prop('disabled', false);
+    };
+    reader.readAsDataURL(file);
+}
+
+function loadSampleImages() {
+    const sampleImages = [
+        { 
+            path: 'data/vn_handwritten_images/vn_000000.png', 
+            title: 'Mẫu 1 - Văn bản viết tay cơ bản',
+            description: 'Văn bản viết tay đơn giản, rõ ràng với các ký tự cơ bản'
+        },
+        { 
+            path: 'data/vn_handwritten_images/vn_000001.png', 
+            title: 'Mẫu 2 - Văn bản viết tay phức tạp',
+            description: 'Văn bản có độ phức tạp trung bình với một số ký tự đặc biệt'
+        },
+        { 
+            path: 'data/vn_handwritten_images/vn_000002.png', 
+            title: 'Mẫu 3 - Văn bản viết tay nâng cao',
+            description: 'Văn bản phức tạp với nhiều ký tự đặc biệt và dấu tiếng Việt'
+        },
+        { 
+            path: 'data/vn_handwritten_images/vn_000003.png', 
+            title: 'Mẫu 4 - Văn bản viết tay đặc biệt',
+            description: 'Văn bản có các ký tự đặc biệt và định dạng phức tạp'
+        },
+        { 
+            path: 'data/vn_handwritten_images/vn_000004.png', 
+            title: 'Mẫu 5 - Văn bản viết tay chất lượng cao',
+            description: 'Văn bản chất lượng cao với độ rõ nét tốt'
+        },
+        { 
+            path: 'data/vn_handwritten_images/vn_000005.png', 
+            title: 'Mẫu 6 - Văn bản viết tay đa dạng',
+            description: 'Văn bản đa dạng với nhiều loại ký tự khác nhau'
+        }
+    ];
+    
+    const container = $('#sampleImages');
+    sampleImages.forEach((sample, index) => {
+        const sampleDiv = $(`
+            <div class="sample-image" onclick="useSampleImage('${sample.path}', '${sample.title}')">
+                <img src="${sample.path}" alt="${sample.title}" onerror="this.style.display='none'">
+                <div class="sample-overlay">
+                    <button>Sử dụng mẫu ${index + 1}</button>
+                </div>
+                <div class="sample-info">
+                    <div class="sample-title">${sample.title}</div>
+                    <div class="sample-description">${sample.description}</div>
+                </div>
+            </div>
+        `);
+        container.append(sampleDiv);
+    });
+}
+
+function useSampleImage(imagePath, title) {
+    // Create a fake file input for the sample image
+    fetch(imagePath)
+        .then(response => response.blob())
+        .then(blob => {
+            const file = new File([blob], title, { type: blob.type });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            
+            // Store in sessionStorage for the main page to use
+            sessionStorage.setItem('selectedSampleImage', JSON.stringify({
+                path: imagePath,
+                title: title,
+                blob: URL.createObjectURL(blob)
+            }));
+            
+            // Redirect to main page
+            window.location.href = '/';
+        })
+        .catch(error => {
+            console.error('Error loading sample image:', error);
+            alert('Không thể tải ảnh mẫu. Vui lòng thử lại!');
+        });
+}
+</script>
+{% endblock %}
+
+
+
+
+
+
+

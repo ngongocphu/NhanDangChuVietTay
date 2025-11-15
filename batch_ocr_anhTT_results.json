@@ -1,0 +1,158 @@
+{
+  "timestamp": "2025-11-13 14:20:06",
+  "total_images": 16,
+  "results": [
+    {
+      "image": "z7188574174061_72038cd8ffa0655e79dc9e5dc2551b3e.jpg",
+      "recognized_text": "12 Hỏa Lò, Cửa Nam, Hà Nội",
+      "ground_truth": "12 hỏa lò, cửa nam, hà nội",
+      "cer": 0.0,
+      "match": true,
+      "confidence": 42.3,
+      "processing_time": 4.3
+    },
+    {
+      "image": "z7188574179357_a8b70fac5dcb2aec9b4e26acd10ebe35.jpg",
+      "recognized_text": "272 Võ Chí Công, Tây Hồ, Hà Nội",
+      "ground_truth": "272 võ chí công, tây hồ, hà nội",
+      "cer": 0.0,
+      "match": true,
+      "confidence": 35.5,
+      "processing_time": 3.98
+    },
+    {
+      "image": "z7188574184756_1bf47b2a1da2031ae07d4cb5a91ee952.jpg",
+      "recognized_text": "146 Phan Văn Minh, Đống Đa, Hà Nội",
+      "ground_truth": "146 phan văn minh, đống đa, hà nội",
+      "cer": 0.0,
+      "match": true,
+      "confidence": 39.1,
+      "processing_time": 2.66
+    },
+    {
+      "image": "z7188574192619_1ee857185fe5bbd39e05230626da3517.jpg",
+      "recognized_text": "16 1ẽ Thai Tổ H00n Hà Nôí Kiêw",
+      "ground_truth": "16 lê thái tổ, hoàn kiếm, hà nội",
+      "cer": 65.62,
+      "match": false,
+      "confidence": 54.0,
+      "processing_time": 3.66
+    },
+    {
+      "image": "z7188574194907_f877295dce5bec9c5a8f0572f877a0cb.jpg",
+      "recognized_text": "4 S8 Miw KYa 2 Vẳm Hà Nộií Tuyj",
+      "ground_truth": "458 minh khai, vĩnh tuy, hà nội",
+      "cer": 80.65,
+      "match": false,
+      "confidence": 53.0,
+      "processing_time": 3.53
+    },
+    {
+      "image": "z7188574201963_42cb62ecf2023dbf29205586e9809734.jpg",
+      "recognized_text": "34 1ê 1ai Ha 2 Ha NẴí Tnung",
+      "ground_truth": "31 lê lai, hà trung, hà nội",
+      "cer": 77.78,
+      "match": false,
+      "confidence": 66.7,
+      "processing_time": 2.27
+    },
+    {
+      "image": "z7188574203453_74446ceb1451cfcd6343e4f892faeadd.jpg",
+      "recognized_text": "64 Tô Hi2u Đõng Pa Ha Nôv",
+      "ground_truth": "61 tô hiệu, đống đa, hà nội",
+      "cer": 70.37,
+      "match": false,
+      "confidence": 51.1,
+      "processing_time": 3.03
+    },
+    {
+      "image": "z7188574214698_6294ffe617ff3f3b049d05d2d285b592.jpg",
+      "recognized_text": "598 Ha Ha Nôi uawg Tuq Đổnq",
+      "ground_truth": "598 quảng trung, hà đông, hà nội",
+      "cer": 84.38,
+      "match": false,
+      "confidence": 62.0,
+      "processing_time": 3.89
+    },
+    {
+      "image": "z7188574215503_d352cd067c489b28840bf74238ccf33c.jpg",
+      "recognized_text": "26 Nqw ên ĐíM 8ẩu 1 Đc Đôìg",
+      "ground_truth": "26 nguyễn đình chiểu, đống đa",
+      "cer": 75.86,
+      "match": false,
+      "confidence": 26.2,
+      "processing_time": 3.27
+    },
+    {
+      "image": "z7188574224504_a23ab2c971e1604c09abf128809bfb00.jpg",
+      "recognized_text": "54 B ĐinẴ Tiê Cau Gìấy H Nỏi H0aug",
+      "ground_truth": "57B đinh tiên hoàng, cầu giấy, hà nội",
+      "cer": 89.19,
+      "match": false,
+      "confidence": 52.2,
+      "processing_time": 4.42
+    },
+    {
+      "image": "z7188574229474_f4f5e13a638b4cfae6578d8b4cba4b40.jpg",
+      "recognized_text": "36 1ê Duàn Af Đwh Ha Nổ",
+      "ground_truth": "36 lê duẩn, mỹ đình, hà nội",
+      "cer": 62.96,
+      "match": false,
+      "confidence": 48.8,
+      "processing_time": 3.93
+    },
+    {
+      "image": "z7188574233064_87257a52685c6e2a97e593867ed6a75c.jpg",
+      "recognized_text": "H0w 1ci Đ89 Hà N0r 0a 3",
+      "ground_truth": "37 hoàn kiếm, đống đa, hà nội",
+      "cer": 89.66,
+      "match": false,
+      "confidence": 32.7,
+      "processing_time": 3.82
+    },
+    {
+      "image": "z7188574240013_64e953be764ae2e34c437ef0f516fc6a.jpg",
+      "recognized_text": "63 Ha Yen H Nôi Tnug Tung",
+      "ground_truth": "63 trung hòa, trung yên, hà nội",
+      "cer": 87.1,
+      "match": false,
+      "confidence": 57.3,
+      "processing_time": 3.83
+    },
+    {
+      "image": "z7188574247291_9142abfcacdb4bbe0f3b5f133c8e7265.jpg",
+      "recognized_text": "1g 1ê 1ai uc 2 Ha Vam 9ông",
+      "ground_truth": "18 lê lai, văn quán, hà đông",
+      "cer": 75.0,
+      "match": false,
+      "confidence": 46.5,
+      "processing_time": 3.33
+    },
+    {
+      "image": "z7188574253771_c968d0cbc6ba377519d20b898030887e.jpg",
+      "recognized_text": "64 Qidn V0Ă Qu0m Hà 78ăg Bàng",
+      "ground_truth": "64 chiến thắng, văn quán, hà đông",
+      "cer": 87.88,
+      "match": false,
+      "confidence": 58.5,
+      "processing_time": 3.62
+    },
+    {
+      "image": "z7188574260744_38d8cdbb0172785933fb78f4e0b5c2d8.jpg",
+      "recognized_text": "58 , Quòc Tử Giam , 7P Ha Nổi",
+      "ground_truth": "58, quốc tử giám, TP hà nội",
+      "cer": 89.66,
+      "match": false,
+      "confidence": 29.0,
+      "processing_time": 2.89
+    }
+  ],
+  "statistics": {
+    "successful": 16,
+    "with_ground_truth": 16,
+    "correct": 3,
+    "accuracy": 18.75,
+    "avg_cer": 64.76,
+    "avg_time": 3.53
+  }
+}
